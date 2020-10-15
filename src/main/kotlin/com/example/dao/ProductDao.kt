@@ -1,6 +1,7 @@
 package com.example.dao
 
 import com.example.model.Product
+import javafx.collections.FXCollections
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -54,9 +55,31 @@ class ProductDao {
         ps.setInt(2,item.price)
         ps.setString(3,name)
         ps.setString(4,category)
-        println(ps.executeUpdate())
+        ps.executeUpdate()
         ps.close()
         conn.close()
         return item
     }
+
+    fun searchProduct(name: String):List<Product>{
+        println(name)
+        val conn = Database().conn
+        val ps = conn.prepareStatement("select * from product where name like ? or category like ?")
+        ps.setString(1, "%$name%")
+        ps.setString(2,name)
+        val resultSet = ps.executeQuery()
+        val searchProducts = FXCollections.observableArrayList<Product>()
+        while(resultSet.next()){
+            val name = resultSet.getString("name")
+            val category = resultSet.getString("category")
+            val number = resultSet.getInt("number")
+            val price = resultSet.getInt("price")
+            val product = Product(name,category,number,price)
+            searchProducts.add(product)
+        }
+        resultSet.close()
+        conn.close()
+        return searchProducts
+    }
+
 }
