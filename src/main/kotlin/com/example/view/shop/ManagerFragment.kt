@@ -20,7 +20,7 @@ class ManagerFragment : Fragment("Management System"){
     private var productnumberString = SimpleStringProperty()
     private var productpriceString = SimpleStringProperty()
     private val categoryBox = FXCollections.observableArrayList("Food",
-            "Electronic","Books","Clothes","Sports","Shoes","Fruits")
+            "Electronic","Books","Clothes","Sports","Shoes","Fruits","Tableware")
 
     private lateinit var categoryCb: ComboBox<String>
     var item :Product? = null
@@ -30,23 +30,28 @@ class ManagerFragment : Fragment("Management System"){
 
         left = vbox {
             form {
-                setPrefSize(400.0, 600.0)
+                setPrefSize(230.0, 600.0)
                 fieldset {
                     field("Product Name")
-                    nameField = textfield(productnameString)
+                    nameField = textfield(productnameString){
+                        promptText = "Please Input product name here"
+                    }
                     field("Product Category")
                     categoryCb = combobox(productcategoryString, categoryBox)
-                    field("Product Number")
+                    field("Product Amount")
                     numberField = textfield(productnumberString) {
+                        promptText = "Please Input Integer here"
                         filterInput { it.controlNewText.isInt() }
                     }
                     field("Product Price")
                     priceField = textfield(productpriceString) {
+                        promptText = "Please Input Integer here"
                         filterInput { it.controlNewText.isInt() }
                     }
 
 
                     button("On Shelf") {
+                        spacing = 10.0
                          setOnAction {
                              managementController.addProduct(productnameString.value, productcategoryString.value, Integer.parseInt(productnumberString.value), Integer.parseInt(productpriceString.value))
                              find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
@@ -57,6 +62,7 @@ class ManagerFragment : Fragment("Management System"){
                     }
 
                     button("Off Shelf") {
+                        spacing = 10.0
                         action {
                             println("The product I select to delete is:   $item")
                             managementController.deleteProduct(item!!)
@@ -68,6 +74,7 @@ class ManagerFragment : Fragment("Management System"){
                     }
 
                     button("Update Product"){
+                        spacing = 10.0
                         action {
                             println("The product I select to update is:   $item")
                             if(item!!.name == nameField.text && item!!.category == categoryCb.selectionModel.selectedItem){
@@ -88,26 +95,31 @@ class ManagerFragment : Fragment("Management System"){
 
         center  = tableview<Product> {
             items = managementController.products
+            columnResizePolicy = SmartResize.POLICY
 
             column("Name",String::class){
                 value{
                     it.value.name
                 }
+                remainingWidth()
             }
             column("Category",String::class){
                 value{
                     it.value.category
                 }
+                remainingWidth()
             }
             column("Amount",Int::class){
                 value{
                     it.value.number
                 }
+                remainingWidth()
             }
             column("Price",Int::class){
                 value{
                     it.value.price
                 }
+                remainingWidth()
             }
 
 
