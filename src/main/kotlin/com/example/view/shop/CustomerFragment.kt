@@ -10,17 +10,21 @@ import javafx.scene.control.ComboBox
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import tornadofx.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CustomerFragment: Fragment("Customer Shopping Platform") {
     var productfield: TextField by singleAssign()
     var amountField: TextField by singleAssign()
     var searchField: TextField by singleAssign()
-    private lateinit var filterCb: ComboBox<Product>
+    private lateinit var filterCb: ComboBox<String>
     lateinit var table: TableView<Product>
     private var purchaseAmountString = SimpleStringProperty()
     private var purchaseNameString = SimpleStringProperty()
-    private var productCategory = SimpleObjectProperty<Product>()
+    private var productCategory = SimpleStringProperty()
     var itemPurchase :Product? = null
+    private val filterBox = FXCollections.observableArrayList("All Category","Food",
+            "Electronic","Books","Clothes","Sports","Shoes","Fruits","Tableware")
     private val managementController: ManagementController by inject()
     override val root = borderpane {
 
@@ -38,10 +42,10 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                     button("Search") {
                         spacing = 10.0
                         setOnAction {
-                            if(searchField.text != null) {
+                            if (searchField.text != null) {
                                 managementController.searchProduct(searchField.text)
                                 table.items = managementController.nameSearch
-                            }else{
+                            } else {
                                 find<PopupDialog>(params = mapOf("message" to "You need to fill the box !!!")).openModal()
                             }
                         }
@@ -64,7 +68,7 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                         setOnAction {
                             println(itemPurchase)
 
-                            if(productfield.text!= null && amountField.text!= null) {
+                            if (productfield.text != null && amountField.text != null) {
                                 if (itemPurchase!!.number - amountField.text.toInt() >= 0) {
                                     managementController.purchaseProduct(itemPurchase!!, amountField.text.toInt())
                                     productfield.clear()
@@ -75,7 +79,7 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                                 } else {
                                     find<PopupDialog>(params = mapOf("message" to "We don't have enough goods !!!")).openModal()
                                 }
-                            }else{
+                            } else {
                                 find<PopupDialog>(params = mapOf("message" to "You need to fill the box !!!")).openModal()
                             }
 
@@ -87,53 +91,58 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
             }
         }
 
-        center = vbox{
+        center = vbox {
             table = tableview<Product> {
-            items = managementController.products
-            columnResizePolicy = SmartResize.POLICY
+                items = managementController.products
+                columnResizePolicy = SmartResize.POLICY
 
-            column("Name", String::class) {
-                value {
-                    it.value.name
+                column("Name", String::class) {
+                    value {
+                        it.value.name
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
-            column("Category", String::class) {
-                value {
-                    it.value.category
+                column("Category", String::class) {
+                    value {
+                        it.value.category
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
-            column("Amount", Int::class) {
-                value {
-                    it.value.number
+                column("Amount", Int::class) {
+                    value {
+                        it.value.number
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
-            column("Price", Int::class) {
-                value {
-                    it.value.price
+                column("Price", Int::class) {
+                    value {
+                        it.value.price
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
+
+
+                onUserSelect(clickCount = 1) { product ->
+                    itemPurchase = product
+                    productfield.text = itemPurchase?.name
+                }
             }
 
-
-            onUserSelect(clickCount = 1) { product ->
-                itemPurchase = product
-                productfield.text = itemPurchase?.name
-            }
-        }
-
-
-            filterCb = combobox(productCategory, values = managementController.products.asObservable()) {
-                cellFormat {
-                    repeat(1){
-                        text = this.item.category
+            label("Category Filter")
+            spacing = 10.0
+            filterCb = combobox(productCategory,filterBox){
+                setOnAction {
+                    if(this.value == "All Category"){
+                        table.items = managementController.products
+                    }else{
+                        managementController.searchProduct(this.value)
+                        table.items = managementController.nameSearch
                     }
                 }
             }
 
-    }
+            }
 
-    }
+        }
+
 }

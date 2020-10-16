@@ -66,7 +66,7 @@ class ProductDao {
         val conn = Database().conn
         val ps = conn.prepareStatement("select * from product where name like ? or category like ?")
         ps.setString(1, "%$name%")
-        ps.setString(2,name)
+        ps.setString(2,"%$name%")
         val resultSet = ps.executeQuery()
         val searchProducts = FXCollections.observableArrayList<Product>()
         while(resultSet.next()){
