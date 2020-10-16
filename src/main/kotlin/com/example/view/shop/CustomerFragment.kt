@@ -3,7 +3,10 @@ package com.example.view.shop
 import com.example.controller.ManagementController
 import com.example.model.Product
 import com.example.utils.PopupDialog
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.FXCollections
+import javafx.scene.control.ComboBox
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import tornadofx.*
@@ -12,9 +15,11 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
     var productfield: TextField by singleAssign()
     var amountField: TextField by singleAssign()
     var searchField: TextField by singleAssign()
+    private lateinit var filterCb: ComboBox<Product>
     lateinit var table: TableView<Product>
     private var purchaseAmountString = SimpleStringProperty()
     private var purchaseNameString = SimpleStringProperty()
+    private var productCategory = SimpleObjectProperty<Product>()
     var itemPurchase :Product? = null
     private val managementController: ManagementController by inject()
     override val root = borderpane {
@@ -29,11 +34,16 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                         promptText = "Search Product Name or Category"
                     }
 
+
                     button("Search") {
                         spacing = 10.0
                         setOnAction {
-                            managementController.searchProduct(searchField.text)
-                            table.items = managementController.nameSearch
+                            if(searchField.text != null) {
+                                managementController.searchProduct(searchField.text)
+                                table.items = managementController.nameSearch
+                            }else{
+                                find<PopupDialog>(params = mapOf("message" to "You need to fill the box !!!")).openModal()
+                            }
                         }
                     }
 
@@ -52,8 +62,23 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                     button("Purchase") {
                         spacing = 10.0
                         setOnAction {
+                            println(itemPurchase)
 
-                            find<PopupDialog>(params = mapOf("message" to "Purchase Success!!!")).openModal()
+                            if(productfield.text!= null && amountField.text!= null) {
+                                if (itemPurchase!!.number - amountField.text.toInt() >= 0) {
+                                    managementController.purchaseProduct(itemPurchase!!, amountField.text.toInt())
+                                    productfield.clear()
+                                    amountField.clear()
+                                    find<PopupDialog>(params = mapOf("message" to "Purchase Success!!!")).openModal()
+                                    itemPurchase = null
+                                    println(itemPurchase)
+                                } else {
+                                    find<PopupDialog>(params = mapOf("message" to "We don't have enough goods !!!")).openModal()
+                                }
+                            }else{
+                                find<PopupDialog>(params = mapOf("message" to "You need to fill the box !!!")).openModal()
+                            }
+
                         }
                     }
 
@@ -98,6 +123,15 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                 productfield.text = itemPurchase?.name
             }
         }
+
+
+            filterCb = combobox(productCategory, values = managementController.products.asObservable()) {
+                cellFormat {
+                    repeat(1){
+                        text = this.item.category
+                    }
+                }
+            }
 
     }
 

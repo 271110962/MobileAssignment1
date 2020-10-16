@@ -21,7 +21,7 @@ class ProductDao {
 
     fun listProducts():List<Product>{
         val conn = Database().conn
-        val resultSet = conn.createStatement().executeQuery("select * from product order by id")
+        val resultSet = conn.createStatement().executeQuery("select * from product where number != 0 order by id")
         val products = ArrayList<Product>()
         while(resultSet.next()){
             val name = resultSet.getString("name")
@@ -80,6 +80,19 @@ class ProductDao {
         resultSet.close()
         conn.close()
         return searchProducts
+    }
+
+
+    fun purchaseProduct(product:Product, amount:Int):Product{
+        val conn = Database().conn
+        val ps = conn.prepareStatement("update product set number = (number - ?) where name = ? and category = ?")
+        ps.setInt(1,amount)
+        ps.setString(2,product.name)
+        ps.setString(3,product.category)
+        ps.executeUpdate()
+        ps.close()
+        conn.close()
+        return product
     }
 
 }

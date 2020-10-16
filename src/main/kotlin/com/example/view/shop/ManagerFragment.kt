@@ -53,11 +53,17 @@ class ManagerFragment : Fragment("Management System"){
                     button("On Shelf") {
                         spacing = 10.0
                          setOnAction {
-                             managementController.addProduct(productnameString.value, productcategoryString.value, Integer.parseInt(productnumberString.value), Integer.parseInt(productpriceString.value))
-                             find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
-                             nameField.clear()
-                             numberField.clear()
-                             priceField.clear()
+                             println(categoryCb.value)
+                             if(nameField.text!=null && categoryCb.value != null && numberField.text!=null && priceField.text!=null) {
+                                 managementController.addProduct(nameField.text, categoryCb.value, numberField.text.toInt(), priceField.text.toInt())
+                                 find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
+                                 nameField.text = null
+                                 categoryCb.value = null
+                                 numberField.text = null
+                                 priceField.text = null
+                             }else{
+                                 find<PopupDialog>(params = mapOf("message" to "Fill all boxes!!!")).openModal()
+                             }
                          }
                     }
 
@@ -65,11 +71,17 @@ class ManagerFragment : Fragment("Management System"){
                         spacing = 10.0
                         action {
                             println("The product I select to delete is:   $item")
-                            managementController.deleteProduct(item!!)
-                            find<PopupDialog>(params = mapOf("message" to "Off Shelf Success!!!")).openModal()
-                            nameField.clear()
-                            numberField.clear()
-                            priceField.clear()
+                            if(item!=null) {
+                                managementController.deleteProduct(item!!)
+                                find<PopupDialog>(params = mapOf("message" to "Off Shelf Success!!!")).openModal()
+                                nameField.text = null
+                                categoryCb.value = null
+                                numberField.text = null
+                                priceField.text = null
+                                item = null
+                            }else{
+                                find<PopupDialog>(params = mapOf("message" to "Select an item!!!")).openModal()
+                            }
                         }
                     }
 
@@ -77,14 +89,20 @@ class ManagerFragment : Fragment("Management System"){
                         spacing = 10.0
                         action {
                             println("The product I select to update is:   $item")
-                            if(item!!.name == nameField.text && item!!.category == categoryCb.selectionModel.selectedItem){
-                                managementController.updateProduct(item!!,numberField.text.toInt(),priceField.text.toInt())
-                                find<PopupDialog>(params = mapOf("message" to "Update Product Success!!!")).openModal()
-                                nameField.clear()
-                                numberField.clear()
-                                priceField.clear()
+                            if(item!=null) {
+                                if (item!!.name == nameField.text && item!!.category == categoryCb.selectionModel.selectedItem && numberField.text.isNotEmpty() && numberField.text != "0" && priceField.text!=null) {
+                                    managementController.updateProduct(item!!, numberField.text.toInt(), priceField.text.toInt())
+                                    find<PopupDialog>(params = mapOf("message" to "Update Product Success!!!")).openModal()
+                                    nameField.text = null
+                                    categoryCb.value = null
+                                    numberField.text = null
+                                    priceField.text = null
+                                    item = null
+                                } else {
+                                    find<PopupDialog>(params = mapOf("message" to "You can't change name and category(And the amount can't be 0)!!!")).openModal()
+                                }
                             }else{
-                                find<PopupDialog>(params = mapOf("message" to "You can't change name and category!!!")).openModal()
+                                find<PopupDialog>(params = mapOf("message" to "Select an item!!!")).openModal()
                             }
                         }
                     }

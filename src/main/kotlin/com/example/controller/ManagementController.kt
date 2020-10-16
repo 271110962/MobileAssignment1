@@ -24,11 +24,17 @@ class ManagementController : Controller(){
     }
 
 
-    private fun listAllProducts(): List<Product> = ProductDao().listProducts()
+    private fun listAllProducts(): List<Product>{
+        return dao.listProducts()
+    }
 
     fun deleteProduct(item: Product){
         dao.deleteProduct(item)
         products.remove(item)
+        if(nameSearch!=null){
+            nameSearch.remove(item)
+        }
+
     }
 
     fun updateProduct(oldItem: Product,number:Int,price:Int){
@@ -43,6 +49,24 @@ class ManagementController : Controller(){
 
     fun searchProduct(productName:String){
         nameSearch = dao.searchProduct(productName) as ObservableList<Product>?
+    }
+
+    fun purchaseProduct(product:Product,purchaseAmount: Int){
+        val newProduct = Product(product.name,product.category,product.number-purchaseAmount,product.price)
+        if(newProduct.number == 0){
+            deleteProduct(product)
+        }else {
+            dao.purchaseProduct(product, purchaseAmount)
+            with(products) {
+                remove(product)
+                add(newProduct)
+            }
+            with(nameSearch){
+                remove(product)
+                add(newProduct)
+            }
+        }
+
     }
 
 
