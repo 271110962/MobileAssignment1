@@ -65,13 +65,17 @@ class ManagerFragment : Fragment("Management System"){
                         spacing = 10.0
                          setOnAction {
                              println(categoryCb.value)
-                             if(nameField.text.isNotEmpty() && categoryCb.value.isNotEmpty() && numberField.text.isNotEmpty()&& priceField.text.isNotEmpty()) {
-                                 managementController.addProduct(nameField.text, categoryCb.value, numberField.text.toInt(), priceField.text.toInt())
-                                 find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
-                                 nameField.text = null
-                                 categoryCb.value = null
-                                 numberField.text = null
-                                 priceField.text = null
+                             if(nameField.text!=null && categoryCb.value!=null  && numberField.text!=null && priceField.text!=null) {
+                                 if(nameField.text.isNotEmpty() && categoryCb.value.isNotEmpty() && numberField.text.isNotEmpty()&& priceField.text.isNotEmpty()) {
+                                     managementController.addProduct(nameField.text, categoryCb.value, numberField.text.toInt(), priceField.text.toInt())
+                                     find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
+                                     nameField.text = null
+                                     categoryCb.value = null
+                                     numberField.text = null
+                                     priceField.text = null
+                                 }else{
+                                     find<PopupDialog>(params = mapOf("message" to "Fill all boxes!!!")).openModal()
+                                 }
                              }else{
                                  find<PopupDialog>(params = mapOf("message" to "Fill all boxes!!!")).openModal()
                              }
