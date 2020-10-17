@@ -13,7 +13,7 @@ import tornadofx.*
 /***
  * This is the Manager Fragment which let the manager could add , update , delete products that providing to the customer.
  *
- * It provide the Add Product function，Delete Product Function(Select the product on the tableview, click off Sheff),Update Product Function(Select the product on the tableview, click update)
+ * It provide the Add Product function，Delete Product Function(Select the product on the tableview, click off Shelf),Update Product Function(Select the product on the tableview, click update)
  */
 class ManagerFragment : Fragment("Management System"){
     var nameField: TextField by singleAssign()
@@ -65,7 +65,7 @@ class ManagerFragment : Fragment("Management System"){
                         spacing = 10.0
                          setOnAction {
                              println(categoryCb.value)
-                             if(nameField.text!=null && categoryCb.value != null && numberField.text!=null && priceField.text!=null) {
+                             if(nameField.text.isNotEmpty() && categoryCb.value.isNotEmpty() && numberField.text.isNotEmpty()&& priceField.text.isNotEmpty()) {
                                  managementController.addProduct(nameField.text, categoryCb.value, numberField.text.toInt(), priceField.text.toInt())
                                  find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
                                  nameField.text = null
@@ -101,7 +101,7 @@ class ManagerFragment : Fragment("Management System"){
                         action {
                             println("The product I select to update is:   $item")
                             if(item!=null) {
-                                if (item!!.name == nameField.text && item!!.category == categoryCb.selectionModel.selectedItem && numberField.text.isNotEmpty() && numberField.text != "0" && priceField.text!=null) {
+                                if (item!!.name == nameField.text && item!!.category == categoryCb.selectionModel.selectedItem && numberField.text.isNotEmpty() && numberField.text != "0" && priceField.text.isNotEmpty()) {
                                     managementController.updateProduct(item!!, numberField.text.toInt(), priceField.text.toInt())
                                     find<PopupDialog>(params = mapOf("message" to "Update Product Success!!!")).openModal()
                                     nameField.text = null
@@ -154,10 +154,10 @@ class ManagerFragment : Fragment("Management System"){
 
             onUserSelect(clickCount = 1) { product ->
                 item = product
-                nameField.text = item?.name
-                categoryCb.selectionModel.select(item?.category)
-                numberField.text = item?.number.toString()
-                priceField.text = item?.price.toString()
+                nameField.text = item!!.name
+                categoryCb.selectionModel.select(item!!.category)
+                numberField.text = item!!.number.toString()
+                priceField.text = item!!.price.toString()
             }
 
         }

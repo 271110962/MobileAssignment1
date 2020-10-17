@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
  */
 
 class CustomerFragment: Fragment("Customer Shopping Platform") {
-    var productfield: TextField by singleAssign()
+    var productField: TextField by singleAssign()
     var amountField: TextField by singleAssign()
     var searchField: TextField by singleAssign()
     private lateinit var filterCb: ComboBox<String>
@@ -62,7 +62,7 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
 
                     //Textfield that show the product you select and the field is uneditable
                     field("The Product you select:")
-                    productfield = textfield {
+                    productField = textfield {
                         isEditable = false
                     }
                     //Textfield that input the amount of product want to purchase
@@ -77,11 +77,11 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                         setOnAction {
                             println(itemPurchase)
 
-                            if (productfield.text != null && amountField.text != null) {
+                            if (productField.text != null && amountField.text != null) {
                                 if (itemPurchase!!.number - amountField.text.toInt() >= 0) {
                                     managementController.purchaseProduct(itemPurchase!!, amountField.text.toInt())
-                                    productfield.clear()
-                                    amountField.clear()
+                                    productField.text = null
+                                    amountField.text = null
                                     find<PopupDialog>(params = mapOf("message" to "Purchase Success!!!")).openModal()
                                     itemPurchase = null
                                     println(itemPurchase)
@@ -133,7 +133,7 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                 //make the tableview was selectable and return selected product.
                 onUserSelect(clickCount = 1) { product ->
                     itemPurchase = product
-                    productfield.text = itemPurchase?.name
+                    productField.text = itemPurchase?.name
                 }
             }
             //Filtering Box, All Category return all products, others return product that category you choose
