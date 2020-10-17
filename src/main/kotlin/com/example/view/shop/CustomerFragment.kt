@@ -13,6 +13,15 @@ import tornadofx.*
 import java.util.*
 import kotlin.collections.ArrayList
 
+/***
+ * This is the Customer Page that could let customer shopping.
+ * It contains the Search function, you can search the product by name or category
+ *
+ * Purchase function, you can purchase product after you select the item
+ *
+ * Filtering function, you need to select AllCategory option to show all products after search something. Or select the category you want to show.
+ */
+
 class CustomerFragment: Fragment("Customer Shopping Platform") {
     var productfield: TextField by singleAssign()
     var amountField: TextField by singleAssign()
@@ -32,13 +41,13 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
             form {
                 setPrefSize(230.0, 600.0)
                 fieldset {
-
+                    //Search textfield that can input the product name or product category
                     field("SearchBox")
                     searchField = textfield(purchaseNameString) {
                         promptText = "Search Product Name or Category"
                     }
 
-
+                    //Search button
                     button("Search") {
                         spacing = 10.0
                         setOnAction {
@@ -51,18 +60,18 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                         }
                     }
 
-
+                    //Textfield that show the product you select and the field is uneditable
                     field("The Product you select:")
                     productfield = textfield {
                         isEditable = false
                     }
-
+                    //Textfield that input the amount of product want to purchase
                     field("Amount Purchase")
                     amountField = textfield(purchaseAmountString) {
                         promptText = "Please Input purchase amount here"
                         filterInput { it.controlNewText.isInt() }
                     }
-
+                    //Purchase button
                     button("Purchase") {
                         spacing = 10.0
                         setOnAction {
@@ -90,7 +99,7 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                 }
             }
         }
-
+        //A Vertical box contains the tableview
         center = vbox {
             table = tableview<Product> {
                 items = managementController.products
@@ -121,13 +130,13 @@ class CustomerFragment: Fragment("Customer Shopping Platform") {
                     remainingWidth()
                 }
 
-
+                //make the tableview was selectable and return selected product.
                 onUserSelect(clickCount = 1) { product ->
                     itemPurchase = product
                     productfield.text = itemPurchase?.name
                 }
             }
-
+            //Filtering Box, All Category return all products, others return product that category you choose
             label("Category Filter")
             spacing = 10.0
             filterCb = combobox(productCategory,filterBox){

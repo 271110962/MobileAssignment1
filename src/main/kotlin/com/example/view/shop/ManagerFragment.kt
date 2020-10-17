@@ -10,6 +10,11 @@ import javafx.scene.control.TextField
 import javafx.stage.StageStyle
 import tornadofx.*
 
+/***
+ * This is the Manager Fragment which let the manager could add , update , delete products that providing to the customer.
+ *
+ * It provide the Add Product function，Delete Product Function(Select the product on the tableview, click off Sheff),Update Product Function(Select the product on the tableview, click update)
+ */
 class ManagerFragment : Fragment("Management System"){
     var nameField: TextField by singleAssign()
     var numberField: TextField by singleAssign()
@@ -32,24 +37,30 @@ class ManagerFragment : Fragment("Management System"){
             form {
                 setPrefSize(230.0, 600.0)
                 fieldset {
+                    // product name textfield
                     field("Product Name")
                     nameField = textfield(productnameString){
                         promptText = "Please Input product name here"
                     }
+                    // product category combobox
                     field("Product Category")
                     categoryCb = combobox(productcategoryString, categoryBox)
+
+                    // product amount textfield
                     field("Product Amount")
                     numberField = textfield(productnumberString) {
                         promptText = "Please Input Integer here"
                         filterInput { it.controlNewText.isInt() }
                     }
+
+                    // product price textfield
                     field("Product Price")
                     priceField = textfield(productpriceString) {
                         promptText = "Please Input Integer here"
                         filterInput { it.controlNewText.isInt() }
                     }
 
-
+                    //Create Product button
                     button("On Shelf") {
                         spacing = 10.0
                          setOnAction {
@@ -66,7 +77,7 @@ class ManagerFragment : Fragment("Management System"){
                              }
                          }
                     }
-
+                    //Delete Product button
                     button("Off Shelf") {
                         spacing = 10.0
                         action {
@@ -84,7 +95,7 @@ class ManagerFragment : Fragment("Management System"){
                             }
                         }
                     }
-
+                    //Update Product Button(Could not change the name and the category of selected product)
                     button("Update Product"){
                         spacing = 10.0
                         action {
@@ -110,7 +121,7 @@ class ManagerFragment : Fragment("Management System"){
             }
         }
 
-
+        //Tableview that show the products after manager adding products
         center  = tableview<Product> {
             items = managementController.products
             columnResizePolicy = SmartResize.POLICY
