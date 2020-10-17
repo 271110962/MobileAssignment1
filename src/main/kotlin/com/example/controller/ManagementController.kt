@@ -30,9 +30,9 @@ class ManagementController : Controller(){
 
     fun deleteProduct(item: Product){
         dao.deleteProduct(item)
-        products.remove(item)
+        products.removeAll(item)
         if(nameSearch!=null){
-            nameSearch.remove(item)
+            nameSearch.removeAll(item)
         }
 
     }

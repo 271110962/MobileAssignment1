@@ -6,6 +6,7 @@ import com.example.utils.PopupDialog
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.scene.control.ComboBox
+import javafx.scene.control.TableView
 import javafx.scene.control.TextField
 import javafx.stage.StageStyle
 import tornadofx.*
@@ -19,6 +20,8 @@ class ManagerFragment : Fragment("Management System"){
     var nameField: TextField by singleAssign()
     var numberField: TextField by singleAssign()
     var priceField: TextField by singleAssign()
+    var option:Boolean = true
+    lateinit var table: TableView<Product>
 
     private var productnameString = SimpleStringProperty()
     private var productcategoryString = SimpleStringProperty()
@@ -64,15 +67,27 @@ class ManagerFragment : Fragment("Management System"){
                     button("On Shelf") {
                         spacing = 10.0
                          setOnAction {
+                             for(i in table.items) {
+                                 if(nameField.text == i.name){
+                                     option = false
+                                     break
+                                 }
+
+                             }
                              println(categoryCb.value)
                              if(nameField.text!=null && categoryCb.value!=null  && numberField.text!=null && priceField.text!=null) {
                                  if(nameField.text.isNotEmpty() && categoryCb.value.isNotEmpty() && numberField.text.isNotEmpty()&& priceField.text.isNotEmpty()) {
-                                     managementController.addProduct(nameField.text, categoryCb.value, numberField.text.toInt(), priceField.text.toInt())
-                                     find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
-                                     nameField.text = null
-                                     categoryCb.value = null
-                                     numberField.text = null
-                                     priceField.text = null
+                                    if(option) {
+                                        managementController.addProduct(nameField.text, categoryCb.value, numberField.text.toInt(), priceField.text.toInt())
+                                        find<PopupDialog>(params = mapOf("message" to "On Shelf Success!!!")).openModal()
+                                        nameField.text = null
+                                        categoryCb.value = null
+                                        numberField.text = null
+                                        priceField.text = null
+                                    }else{
+                                        find<PopupDialog>(params = mapOf("message" to "You have same item on the Shelf!!!")).openModal()
+                                        option = true
+                                    }
                                  }else{
                                      find<PopupDialog>(params = mapOf("message" to "Fill all boxes!!!")).openModal()
                                  }
@@ -126,42 +141,46 @@ class ManagerFragment : Fragment("Management System"){
         }
 
         //Tableview that show the products after manager adding products
-        center  = tableview<Product> {
-            items = managementController.products
-            columnResizePolicy = SmartResize.POLICY
+        center  = vbox {
 
-            column("Name",String::class){
-                value{
-                    it.value.name
+            table = tableview<Product> {
+                items = managementController.products
+                columnResizePolicy = SmartResize.POLICY
+
+                column("Name", String::class) {
+                    value {
+                        it.value.name
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
-            column("Category",String::class){
-                value{
-                    it.value.category
+                column("Category", String::class) {
+                    value {
+                        it.value.category
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
-            column("Amount",Int::class){
-                value{
-                    it.value.number
+                column("Amount", Int::class) {
+                    value {
+                        it.value.number
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
-            column("Price",Int::class){
-                value{
-                    it.value.price
+                column("Price", Int::class) {
+                    value {
+                        it.value.price
+                    }
+                    remainingWidth()
                 }
-                remainingWidth()
-            }
 
 
-            onUserSelect(clickCount = 1) { product ->
-                item = product
-                nameField.text = item!!.name
-                categoryCb.selectionModel.select(item!!.category)
-                numberField.text = item!!.number.toString()
-                priceField.text = item!!.price.toString()
+                onUserSelect(clickCount = 1) { product ->
+                    item = product
+                    nameField.text = item!!.name
+                    categoryCb.selectionModel.select(item!!.category)
+                    numberField.text = item!!.number.toString()
+                    priceField.text = item!!.price.toString()
+                }
+
             }
 
         }
